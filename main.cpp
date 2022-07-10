@@ -8,7 +8,7 @@ private:
     friend class DLL;
 public:
     Node();
-    Node(int);
+    explicit Node(int);
     Node(int, Node*, Node*);
 
     virtual ~Node();
@@ -62,9 +62,7 @@ Node* Node::get_next() const{
     return next;
 }
 
-Node::~Node() {
-
-}
+Node::~Node() = default;
 
 class DLL {
 private:
@@ -76,8 +74,8 @@ public:
     void remove();
     Node* get_end() const;
     Node *get_ptr(int index) const;
-    bool pushidx(int index, int val);
-    bool removeidx(int index);
+    bool pushidx(int index, int val) const;
+    bool removeidx(int index) const;
     int get(int index, int error) const;
     bool set(int index, int val);
 };
@@ -120,13 +118,56 @@ Node* DLL::get_end() const {
 Node* DLL::get_ptr(int index) const {
     Node *p = header;
     while ((index > 0) && (p != nullptr)) {
-        if (p == nullptr)
-            break;
-        else
-            p = p->get_next();
+        p = p->get_next();
         index--;
     }
     return p;
+}
+
+bool DLL::pushidx(int index, int val) const {
+    Node *p = get_ptr(index);
+    if (p == nullptr)
+        return true;
+     else {
+        Node *n = new Node(val, p, p->get_next());
+        p->set_next(n);
+        (p->get_next())->set_prev(n);
+        return false;
+    }
+}
+
+bool DLL::removeidx(int index) const {
+    Node *x = get_ptr(index);
+    if (x == nullptr)
+        return true;
+     else {
+        Node *n = x->get_next();
+        Node *p = x->get_prev();
+        if (p != nullptr)
+            p->set_next(n);
+        if (n != nullptr)
+            n->set_prev(p);
+        delete x;
+        return false;
+    }
+}
+
+int DLL::get(int index, int error = 0) const {
+    Node *p = get_ptr(index);
+    if (p == nullptr)
+        return error;
+     else
+        return p->get_val();
+}
+
+bool DLL::set(int index, int val) {
+    Node *p = get_ptr(index);
+    if (p == nullptr)
+        return true;
+     else {
+        p->set_val(val);
+        return false;
+    }
 }
 
 int main() {
