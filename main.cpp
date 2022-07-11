@@ -68,9 +68,11 @@ class DLL {
 private:
     Node* header;
     Node* trailer;
+
 public:
     DLL();
     ~DLL();
+    DLL(const DLL &src);
     void remove();
     Node* get_end() const;
     Node *get_ptr(int index) const;
@@ -78,6 +80,11 @@ public:
     bool removeidx(int index) const;
     int get(int index, int error) const;
     bool set(int index, int val);
+    void push1(int val, DLL &rhs);
+    void push2(int val);
+    DLL operator+(const DLL& rhs);
+    friend std::istream operator >>(std::istream &input, DLL &a);
+    friend std::ostream operator <<(std::ostream &output, const DLL &a);
 };
 
 void DLL::remove() {
@@ -102,6 +109,10 @@ DLL::~DLL() {
     }
     delete header;
     delete trailer;
+}
+
+DLL::DLL(const DLL &src): header(NULL), trailer(NULL) {
+    *this = src;
 }
 
 Node* DLL::get_end() const {
@@ -169,7 +180,48 @@ bool DLL::set(int index, int val) {
         return false;
     }
 }
+void DLL::push1(int val, DLL &rhs) {
+    Node *n = new Node(val);
+    n->prev = rhs.trailer;
+    if(!rhs.header)
+        rhs.header = n;
+    if(rhs.trailer)
+        rhs.trailer->next = n;
+    rhs.trailer = n;
+}
 
+void DLL::push2(int val) {
+    Node *n = new Node(val);
+    n->prev = trailer;
+    if(!header)
+        header = n;
+    if(trailer)
+        trailer->next = n;
+    trailer = n;
+}
+
+DLL DLL::operator+(const DLL &rhs) {
+    DLL temp;
+    Node *n = temp.header;
+    while(n) {
+        temp.push1(n->info, temp);
+        n = n->next;
+    }
+    n = rhs.header;
+    while(n) {
+        temp.push2(n->info);
+        n = n->next;
+    }
+    return temp;
+}
+
+std::istream operator >>(std::istream &input, DLL &a) {
+
+}
+
+std::ostream  operator <<(std::ostream &output, const DLL &a) {
+
+}
 int main() {
 
     return 0;
