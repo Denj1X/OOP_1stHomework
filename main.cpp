@@ -2,10 +2,12 @@
 
 class Node {
 private:
-    int info;
     Node* prev;
     Node* next;
     friend class DLL;
+
+protected:
+    int info;
 public:
     Node();
     explicit Node(int);
@@ -36,7 +38,7 @@ Node::Node(int elem) {
 }
 
 Node::Node(int elem, Node* _prev, Node* _next):
-info(elem), prev(_prev), next(_next) {}
+prev(_prev), next(_next), info(elem) {}
 
 void Node::set_val(int val) {
     this->info = val;
@@ -83,8 +85,8 @@ public:
     void push1(int val, DLL &rhs);
     void push2(int val);
     DLL operator+(const DLL& rhs);
-    friend std::istream operator >>(std::istream &input, DLL &a);
-    friend std::ostream operator <<(std::ostream &output, const DLL &a);
+    friend std::istream& operator >>(std::istream &input, DLL &a);
+    friend std::ostream& operator <<(std::ostream &output, const DLL &a);
 };
 
 void DLL::remove() {
@@ -215,12 +217,39 @@ DLL DLL::operator+(const DLL &rhs) {
     return temp;
 }
 
-std::istream operator >>(std::istream &input, DLL &a) {
-
+std::istream& operator >>(std::istream &input, DLL &a) {
+    std::string comanda;
+    input >> comanda;
+    std::string creez("CREARE");
+    std::string adaug("ADAUGARE");
+    std::string sterg("STERGERE");
+    std::string concat("CONCATENARE");
+    std::string stop("STOP");
+    int flag = comanda.compare(stop);
+    while(flag) {
+        int x = comanda.compare(adaug);
+        int y = comanda.compare(sterg);
+        int z = comanda.compare(concat);
+        input >> comanda;
+        flag = comanda.compare(stop);
+    }
 }
 
-std::ostream  operator <<(std::ostream &output, const DLL &a) {
+std::ostream& operator <<(std::ostream &output, const DLL &a) {
+    output << "\n Afisare normala ";
+    Node *n = a.header;
+    while(n) {
+        output << n->get_val();
+        n = n->get_next();
+    }
 
+    n = a.trailer;
+    while(n) {
+        output << n -> get_val() << " ";
+        n = n -> get_prev();
+    }
+
+    return output;
 }
 int main() {
 
